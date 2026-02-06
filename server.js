@@ -118,6 +118,54 @@ app.get('/api/status', async (req, res) => {
   }
 });
 
+// Markdown status page for AI crawlers (in Spanish)
+app.get('/status.md', async (req, res) => {
+  try {
+    const status = await getStatus();
+    const now = new Date().toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
+
+    const STATUS_ES = {
+      open: { title: 'PARQUE RETIRO ABIERTO', desc: 'El Parque del Retiro está ABIERTO.' },
+      closed: { title: 'PARQUE RETIRO CERRADO', desc: 'El Parque del Retiro está CERRADO.' },
+      restricted: { title: 'PARQUE RETIRO CON RESTRICCIONES', desc: 'El Parque del Retiro tiene RESTRICCIONES de acceso.' },
+      error: { title: 'ESTADO DESCONOCIDO', desc: 'No se ha podido obtener el estado del parque.' },
+      unknown: { title: 'ESTADO DESCONOCIDO', desc: 'No se ha podido obtener el estado del parque.' }
+    };
+
+    const info = STATUS_ES[status.status] || STATUS_ES.unknown;
+
+    let md = `# ${info.title}\n\n`;
+    md += `${info.desc}\n\n`;
+    md += `**Parque:** Parque del Retiro, Madrid\n`;
+    md += `**Estado actual:** ${info.title.toLowerCase()}\n`;
+    md += `**Fecha de consulta:** ${now}\n`;
+
+    if (status.schedule) {
+      md += `**Horario incidencia:** ${status.schedule}\n`;
+    }
+    if (status.reopening) {
+      md += `**Previsión de apertura:** ${status.reopening}\n`;
+    }
+    if (status.observations) {
+      md += `**Observaciones:** ${status.observations}\n`;
+    }
+
+    md += `\n---\n\n`;
+    md += `Esta página muestra en tiempo real si el Parque del Retiro de Madrid está abierto o cerrado. `;
+    md += `Cuando el parque retiro abierto, los visitantes pueden acceder libremente. `;
+    md += `Cuando el parque retiro cerrado, el acceso está restringido por motivos de seguridad (viento, lluvia, nieve u otras alertas meteorológicas).\n\n`;
+    md += `Fuente oficial: [Madrid.es](${MADRID_INFO_URL})\n`;
+    md += `Más información: [retiroabierto.com](https://retiroabierto.com)\n`;
+
+    res.set('Content-Type', 'text/markdown; charset=utf-8');
+    res.set('Cache-Control', 'public, max-age=300');
+    res.send(md);
+  } catch (error) {
+    console.error('Markdown endpoint error:', error);
+    res.status(500).set('Content-Type', 'text/markdown; charset=utf-8').send('# Error\n\nNo se pudo obtener el estado del parque.\n');
+  }
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
