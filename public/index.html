@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Retiro Park Status</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+    }
+
+    .container {
+      text-align: center;
+      padding: 2rem;
+      max-width: 500px;
+      width: 90%;
+    }
+
+    .park-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .subtitle {
+      color: #888;
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+    }
+
+    .status-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 2.5rem;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 1.5rem;
+    }
+
+    .status-indicator {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      margin: 0 auto 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+      transition: all 0.5s ease;
+    }
+
+    .status-indicator.green {
+      background: linear-gradient(135deg, #00b894, #00cec9);
+      box-shadow: 0 0 40px rgba(0, 184, 148, 0.4);
+    }
+
+    .status-indicator.red {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      box-shadow: 0 0 40px rgba(231, 76, 60, 0.4);
+    }
+
+    .status-indicator.orange {
+      background: linear-gradient(135deg, #f39c12, #e67e22);
+      box-shadow: 0 0 40px rgba(243, 156, 18, 0.4);
+    }
+
+    .status-indicator.gray {
+      background: linear-gradient(135deg, #636e72, #2d3436);
+      box-shadow: 0 0 40px rgba(99, 110, 114, 0.4);
+    }
+
+    .status-text {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .status-text.green { color: #00b894; }
+    .status-text.red { color: #e74c3c; }
+    .status-text.orange { color: #f39c12; }
+    .status-text.yellow { color: #f1c40f; }
+    .status-text.gray { color: #636e72; }
+
+    .status-indicator.yellow {
+      background: linear-gradient(135deg, #f1c40f, #f39c12);
+      box-shadow: 0 0 40px rgba(241, 196, 15, 0.4);
+    }
+
+
+    .status-message {
+      color: #ccc;
+      font-size: 1rem;
+    }
+
+    .meta {
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 1rem;
+    }
+
+    .meta span {
+      display: block;
+      margin: 0.3rem 0;
+    }
+
+    .source-link {
+      color: #74b9ff;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.3s;
+    }
+
+    .source-link:hover {
+      color: #a29bfe;
+      text-decoration: underline;
+    }
+
+    .refresh-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 0.7rem 1.5rem;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+      transition: all 0.3s;
+    }
+
+    .refresh-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .refresh-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .loading {
+      display: none;
+    }
+
+    .loading.show {
+      display: block;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top-color: #74b9ff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .error-note {
+      background: rgba(231, 76, 60, 0.2);
+      border: 1px solid rgba(231, 76, 60, 0.3);
+      border-radius: 10px;
+      padding: 1rem;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #fab1a0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="park-icon">🌳</div>
+    <h1>Retiro Park</h1>
+    <p class="subtitle">Parque del Retiro, Madrid</p>
+
+    <div class="status-card">
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p style="margin-top: 1rem; color: #888;">Checking park status...</p>
+      </div>
+
+      <div id="status-content" style="display: none;">
+        <div class="status-indicator" id="status-indicator">
+          <span id="status-icon">?</span>
+        </div>
+        <div class="status-text" id="status-text">Loading...</div>
+        <div class="status-message" id="status-message"></div>
+      </div>
+
+      <div id="error-content" style="display: none;">
+        <div class="error-note">
+          <p id="error-message"></p>
+          <p style="margin-top: 0.5rem;">Please check the official source directly.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="meta">
+      <span id="last-updated"></span>
+      <span id="cache-info"></span>
+    </div>
+
+    <a href="https://www.madrid.es/portal/site/munimadrid/menuitem.0c57021e0d1f6162c345c34571f1a5a0/?vgnextfmt=default&vgnextoid=51c3fb4f3f2cc710VgnVCM1000001d4a900aRCRD&vgnextchannel=3edd31d3b28fe410VgnVCM1000000b205a0aRCRD&vgnextlocale=es"
+       target="_blank"
+       rel="noopener noreferrer"
+       class="source-link">
+      View official Madrid.es source
+    </a>
+
+    <br>
+    <button class="refresh-btn" id="refresh-btn" onclick="fetchStatus(true)">
+      Refresh Status
+    </button>
+  </div>
+
+  <script>
+    const statusIcons = {
+      open: '✓',
+      closed: '✗',
+      restricted: '⚠',
+      unknown: '?',
+      error: '!'
+    };
+
+    const statusLabels = {
+      open: 'OPEN',
+      closed: 'CLOSED',
+      restricted: 'RESTRICTED',
+      unknown: 'UNKNOWN',
+      error: 'ERROR'
+    };
+
+    async function fetchStatus(forceRefresh = false) {
+      const loading = document.getElementById('loading');
+      const statusContent = document.getElementById('status-content');
+      const errorContent = document.getElementById('error-content');
+      const refreshBtn = document.getElementById('refresh-btn');
+
+      loading.classList.add('show');
+      statusContent.style.display = 'none';
+      errorContent.style.display = 'none';
+      refreshBtn.disabled = true;
+
+      try {
+        const endpoint = forceRefresh ? '/api/refresh' : '/api/status';
+        const response = await fetch(endpoint);
+        const data = await response.json();
+
+        loading.classList.remove('show');
+
+        if (data.status === 'error') {
+          errorContent.style.display = 'block';
+          document.getElementById('error-message').textContent = data.message || 'Could not fetch status';
+        } else {
+          statusContent.style.display = 'block';
+
+          const indicator = document.getElementById('status-indicator');
+          const statusText = document.getElementById('status-text');
+          const statusMessage = document.getElementById('status-message');
+          const statusIcon = document.getElementById('status-icon');
+
+          // Remove all color classes
+          indicator.className = 'status-indicator ' + (data.color || 'gray');
+          statusText.className = 'status-text ' + (data.color || 'gray');
+
+          statusIcon.textContent = statusIcons[data.status] || '?';
+          statusText.textContent = statusLabels[data.status] || 'UNKNOWN';
+          statusMessage.textContent = data.message || '';
+
+        }
+
+        // Update meta info
+        const lastUpdated = document.getElementById('last-updated');
+        const cacheInfo = document.getElementById('cache-info');
+
+        if (data.lastUpdated) {
+          const date = new Date(data.lastUpdated);
+          lastUpdated.textContent = 'Last checked: ' + date.toLocaleString();
+        }
+
+        if (data.cached && data.cacheAge) {
+          const minutes = Math.floor(data.cacheAge / 60);
+          cacheInfo.textContent = `(cached ${minutes} min ago)`;
+        } else {
+          cacheInfo.textContent = '(fresh data)';
+        }
+
+      } catch (error) {
+        loading.classList.remove('show');
+        errorContent.style.display = 'block';
+        document.getElementById('error-message').textContent = 'Network error: ' + error.message;
+      }
+
+      refreshBtn.disabled = false;
+    }
+
+    // Initial fetch
+    fetchStatus();
+
+    // Auto-refresh every 5 minutes
+    setInterval(() => fetchStatus(), 5 * 60 * 1000);
+  </script>
+</body>
+</html>

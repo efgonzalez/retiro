@@ -1,0 +1,18 @@
+[Unit]
+Description=Retiro Park Status Website
+After=network.target
+
+[Service]
+Type=simple
+User=edu
+WorkingDirectory=/home/edu/retiro
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=retiro
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
