@@ -58,12 +58,12 @@ https://sigma.madrid.es/hosted/rest/services/MEDIO_AMBIENTE/ALERTAS_PARQUES/MapS
 
 | Code | Status | Color | Description (ES) |
 |---|---|---|---|
-| 1 | open | green | Abierto |
-| 2 | restricted | yellow | Previsión de alerta amarilla (habrá restricciones en zonas según horario de incidencia) |
-| 3 | restricted | yellow | Previsión de alerta amarilla (habrá restricciones en zonas según horario de incidencia) |
-| 4 | restricted | orange | Restricciones activas |
-| 5 | closed | red | Cerrado |
-| 6 | closed | red | Cerrado por alerta roja |
+| 1 | open | green | El parque está abierto. No hay previsiones de alertas próximas |
+| 2 | restricted | yellow | Previsión de alerta amarilla. Habrá restricciones en algunas zonas según el horario de incidencia |
+| 3 | restricted | yellow | Previsión de alerta amarilla. Habrá restricciones en zonas y eventos según el horario de incidencia |
+| 4 | restricted | orange | Previsión de alerta naranja. Habrá restricciones en zonas y eventos según el horario de incidencia |
+| 5 | closed | red | Previsión de alerta roja. Se cerrarán los parques con vallado perimetral según el horario de incidencia |
+| 6 | closed | red | Alerta roja activa. El parque está cerrado |
 
 ### Parks tracked by the API
 

@@ -9,12 +9,12 @@ const MADRID_INFO_URL = 'https://www.madrid.es/portales/munimadrid/es/Inicio/Med
  * 6 = Red (closed)
  */
 const STATUS_MAP = {
-  1: { status: 'open', color: 'green', message: 'The park is OPEN', messageEs: 'El parque está ABIERTO', estado: 'Abierto', estadoEn: 'Open' },
-  2: { status: 'restricted', color: 'yellow', message: 'The park has MINOR RESTRICTIONS (yellow alert)', messageEs: 'El parque tiene RESTRICCIONES MENORES (alerta amarilla)', estado: 'Previsión de alerta amarilla (habrá restricciones en zonas según horario de incidencia)', estadoEn: 'Yellow alert forecast (restrictions in areas during incident hours)' },
-  3: { status: 'restricted', color: 'yellow', message: 'The park has RESTRICTIONS (yellow alert)', messageEs: 'El parque tiene RESTRICCIONES (alerta amarilla)', estado: 'Previsión de alerta amarilla (habrá restricciones en zonas según horario de incidencia)', estadoEn: 'Yellow alert forecast (restrictions in areas during incident hours)' },
-  4: { status: 'restricted', color: 'orange', message: 'The park has RESTRICTIONS', messageEs: 'El parque tiene RESTRICCIONES', estado: 'Restricciones activas', estadoEn: 'Active restrictions' },
-  5: { status: 'closed', color: 'red', message: 'The park is CLOSED', messageEs: 'El parque está CERRADO', estado: 'Cerrado', estadoEn: 'Closed' },
-  6: { status: 'closed', color: 'red', message: 'The park is CLOSED (red alert)', messageEs: 'El parque está CERRADO (alerta roja)', estado: 'Cerrado por alerta roja', estadoEn: 'Closed due to red alert' }
+  1: { status: 'open', color: 'green', messageEs: 'El parque está abierto. No hay previsiones de alertas próximas', message: 'The park is open. No upcoming alert forecasts' },
+  2: { status: 'restricted', color: 'yellow', messageEs: 'Previsión de alerta amarilla. Habrá restricciones en algunas zonas según el horario de incidencia', message: 'Yellow alert forecast. There will be restrictions in some areas during incident hours' },
+  3: { status: 'restricted', color: 'yellow', messageEs: 'Previsión de alerta amarilla. Habrá restricciones en zonas y eventos según el horario de incidencia', message: 'Yellow alert forecast. There will be restrictions in areas and events during incident hours' },
+  4: { status: 'restricted', color: 'orange', messageEs: 'Previsión de alerta naranja. Habrá restricciones en zonas y eventos según el horario de incidencia', message: 'Orange alert forecast. There will be restrictions in areas and events during incident hours' },
+  5: { status: 'closed', color: 'red', messageEs: 'Previsión de alerta roja. Se cerrarán los parques con vallado perimetral según el horario de incidencia', message: 'Red alert forecast. Parks with perimeter fencing will close during incident hours' },
+  6: { status: 'closed', color: 'red', messageEs: 'Alerta roja activa. El parque está cerrado', message: 'Active red alert. The park is closed' }
 };
 
 /**
@@ -77,8 +77,6 @@ async function scrapeRetiroStatus() {
       color: statusInfo.color,
       message: statusInfo.message,
       messageEs: statusInfo.messageEs,
-      estado: statusInfo.estado,
-      estadoEn: statusInfo.estadoEn,
       statusCode: statusCode,
       parkName: attrs.ZONA_VERDE,
       schedule: schedule,

@@ -120,6 +120,26 @@
       line-height: 1.6;
     }
 
+    .details-table {
+      width: 100%;
+      margin-top: 1rem;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      color: #aaa;
+    }
+
+    .details-table td {
+      padding: 0.4rem 0.6rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      text-align: left;
+    }
+
+    .details-table td:first-child {
+      color: #999;
+      white-space: nowrap;
+      font-weight: 500;
+    }
+
     .meta {
       font-size: 0.85rem;
       color: #666;
@@ -216,10 +236,20 @@
         </div>
         <div class="status-text" id="status-text">Loading...</div>
         <div class="status-message" id="status-message"></div>
+        <p class="status-details" id="alert-info" style="margin-top: 1rem;"></p>
         <div class="status-details" id="status-details"></div>
       </div>
 
       <p class="status-details" id="regular-hours" style="margin-top: 1rem;"></p>
+
+      <a href="https://www.madrid.es/portal/site/munimadrid/menuitem.0c57021e0d1f6162c345c34571f1a5a0/?vgnextfmt=default&vgnextoid=51c3fb4f3f2cc710VgnVCM1000001d4a900aRCRD&vgnextchannel=3edd31d3b28fe410VgnVCM1000000b205a0aRCRD&vgnextlocale=es"
+         target="_blank"
+         rel="noopener noreferrer"
+         class="source-link"
+         id="source-link"
+         style="display: inline-block; margin-top: 1rem; font-size: 0.85rem;">
+        View official Madrid.es source
+      </a>
 
       <div id="error-content" style="display: none;">
         <div class="error-note">
@@ -233,15 +263,6 @@
       <span id="last-updated"></span>
       <span id="cache-info"></span>
     </div>
-
-    <a href="https://www.madrid.es/portal/site/munimadrid/menuitem.0c57021e0d1f6162c345c34571f1a5a0/?vgnextfmt=default&vgnextoid=51c3fb4f3f2cc710VgnVCM1000001d4a900aRCRD&vgnextchannel=3edd31d3b28fe410VgnVCM1000000b205a0aRCRD&vgnextlocale=es"
-       target="_blank"
-       rel="noopener noreferrer"
-       class="source-link"
-       id="source-link">
-      View official Madrid.es source
-    </a>
-
 
   </div>
 
@@ -259,17 +280,18 @@
         lastChecked: 'Last checked: ',
         cached: (min) => `(cached ${min} min ago)`,
         fresh: '(fresh data)',
-        estado: 'Status: ',
-        incidentDate: 'Date: ',
-        schedule: 'Hours: ',
-        reopening: 'Expected reopening: ',
+        incidentDate: 'Date',
+        schedule: 'Alert hours',
+        reopening: 'Expected reopening',
+        observations: 'Observations',
+        alertInfo: 'During a <strong>yellow alert</strong>, access to playgrounds, sports areas, and senior areas in the Jardines del Buen Retiro will be restricted, with affected zones cordoned off. During an <strong>orange alert</strong>, access to some playgrounds, sports areas, and senior areas will be restricted, with affected zones cordoned off. During a <strong>red alert</strong>, all access to the park is closed.',
         regularHours: 'Remember that regular hours are 6:00 to 0:00 (midnight) from April to September and 6:00 to 22:00 from October to March, every day of the year.',
-        statusLabels: {
-          open: 'OPEN',
-          closed: 'CLOSED',
-          restricted: 'RESTRICTED',
-          unknown: 'UNKNOWN',
-          error: 'ERROR'
+        colorLabels: {
+          green: 'OPEN',
+          yellow: 'YELLOW ALERT',
+          orange: 'ORANGE ALERT',
+          red: 'CLOSED',
+          gray: 'UNKNOWN'
         }
       },
       es: {
@@ -284,17 +306,18 @@
         lastChecked: 'Última comprobación: ',
         cached: (min) => `(datos de hace ${min} min)`,
         fresh: '(datos actualizados)',
-        estado: 'Estado: ',
-        incidentDate: 'Fecha: ',
-        schedule: 'Horario: ',
-        reopening: 'Previsión de reapertura: ',
+        incidentDate: 'Fecha',
+        schedule: 'Horario de la alerta',
+        reopening: 'Previsión de reapertura',
+        observations: 'Observaciones',
+        alertInfo: 'Durante la <strong>alerta amarilla</strong>, en los Jardines del Buen Retiro, se restringirá el acceso a las zonas infantiles, zonas deportivas y de mayores, balizando las zonas afectadas. Durante la <strong>alerta naranja</strong>, se restringirá el acceso a algunas de las zonas infantiles, zonas deportivas y de mayores, balizando las zonas afectadas. Durante la <strong>alerta roja</strong> se cierran todos los accesos al parque.',
         regularHours: 'Recuerda que el horario habitual es de 6:00 a 0:00 (medianoche) de abril a septiembre y de 6:00 a 22:00 de octubre a marzo, todos los días del año.',
-        statusLabels: {
-          open: 'ABIERTO',
-          closed: 'CERRADO',
-          restricted: 'RESTRINGIDO',
-          unknown: 'DESCONOCIDO',
-          error: 'ERROR'
+        colorLabels: {
+          green: 'ABIERTO',
+          yellow: 'ALERTA AMARILLA',
+          orange: 'ALERTA NARANJA',
+          red: 'CERRADO',
+          gray: 'DESCONOCIDO'
         }
       }
     };
@@ -329,6 +352,7 @@
       document.getElementById('error-hint').textContent = t.errorHint;
       document.getElementById('source-link').textContent = t.sourceLink;
       document.getElementById('lang-toggle').textContent = lang === 'es' ? 'EN' : 'ES';
+      document.getElementById('alert-info').innerHTML = t.alertInfo;
       document.getElementById('regular-hours').textContent = t.regularHours;
 
       // Re-render status text if we have data
@@ -361,18 +385,25 @@
         statusText.className = 'status-text ' + (data.color || 'gray');
 
         statusIcon.textContent = statusIcons[data.status] || '?';
-        statusText.textContent = t.statusLabels[data.status] || t.statusLabels.unknown;
+        statusText.textContent = t.colorLabels[data.color] || t.colorLabels.gray;
         statusMessage.textContent = (currentLang === 'es' ? data.messageEs : data.message) || '';
 
-        // Show incident details
+        // Show incident details as table
         const details = document.getElementById('status-details');
-        let detailsHtml = '';
-        const estado = currentLang === 'es' ? data.estado : data.estadoEn;
-        if (estado) detailsHtml += t.estado + estado + '<br>';
-        if (data.incidentDate) detailsHtml += t.incidentDate + data.incidentDate + '<br>';
-        if (data.schedule) detailsHtml += t.schedule + data.schedule + '<br>';
-        if (data.reopening) detailsHtml += t.reopening + data.reopening + '<br>';
-        details.innerHTML = detailsHtml;
+        const rows = [
+          [t.incidentDate, data.incidentDate],
+          [t.schedule, data.schedule],
+          [t.reopening, data.reopening],
+          [t.observations, data.observations]
+        ].filter(([, val]) => val);
+
+        if (rows.length) {
+          details.innerHTML = '<table class="details-table">' +
+            rows.map(([label, val]) => `<tr><td>${label}</td><td>${val}</td></tr>`).join('') +
+            '</table>';
+        } else {
+          details.innerHTML = '';
+        }
       }
 
       const lastUpdated = document.getElementById('last-updated');
