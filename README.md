@@ -36,4 +36,43 @@ The server starts at `http://127.0.0.1:3000`.
 
 ## Data source
 
-Status data comes from [Madrid.es](https://www.madrid.es/portales/munimadrid/es/Inicio/Medio-ambiente/Estado-de-cierre-y-apertura-de-algunos-parques-en-Madrid/) via their public API.
+Status data comes from [Madrid.es](https://www.madrid.es/portales/munimadrid/es/Inicio/Medio-ambiente/Estado-de-cierre-y-apertura-de-algunos-parques-en-Madrid/) via their public ArcGIS REST API:
+
+```
+https://sigma.madrid.es/hosted/rest/services/MEDIO_AMBIENTE/ALERTAS_PARQUES/MapServer/0/query?where=1%3D1&outFields=*&f=json
+```
+
+### API fields
+
+| Field | Type | Alias | Description |
+|---|---|---|---|
+| `ZONA_VERDE` | string (50) | Nombre parque | Park name |
+| `ALERTA_DESCRIPCION` | smallInt | Estado | Status code (1–6) |
+| `FECHA_INCIDENCIA` | string (100) | Fecha incidencia | Incident date (dd/mm/yyyy) |
+| `HORARIO_INCIDENCIA` | string (50) | Horario incidencia | Incident hours |
+| `PREVISION_APERTURA` | smallInt | Previsión reapertura | Reopening forecast |
+| `OBSERVACIONES` | string (500) | Observaciones | Observations / notes |
+| `OBJECTID` | OID | Id | Object ID |
+
+### Status code mappings
+
+| Code | Status | Color | Description (ES) |
+|---|---|---|---|
+| 1 | open | green | Abierto |
+| 2 | restricted | yellow | Previsión de alerta amarilla (habrá restricciones en zonas según horario de incidencia) |
+| 3 | restricted | yellow | Previsión de alerta amarilla (habrá restricciones en zonas según horario de incidencia) |
+| 4 | restricted | orange | Restricciones activas |
+| 5 | closed | red | Cerrado |
+| 6 | closed | red | Cerrado por alerta roja |
+
+### Parks tracked by the API
+
+1. Jardines del Buen Retiro
+2. Parque Juan Pablo II
+3. Parque Quinta de los Molinos
+4. Parque Quinta de Torre Arias
+5. Parque Juan Carlos I
+6. Jardín del Capricho de la Alameda de Osuna
+7. Rosaleda del Parque del Oeste
+8. Parque Quinta Fuente del Berro
+9. Parque Lineal del Manzanares
