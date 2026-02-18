@@ -66,10 +66,10 @@ async function scrapeRetiroStatus() {
       incidentDate = attrs.FECHA_INCIDENCIA;
     }
 
-    // Check reopening forecast
+    // Check reopening forecast (smallInt field — coerce to string)
     let reopening = '';
-    if (attrs.PREVISION_APERTURA) {
-      reopening = attrs.PREVISION_APERTURA;
+    if (attrs.PREVISION_APERTURA != null && attrs.PREVISION_APERTURA !== 0) {
+      reopening = String(attrs.PREVISION_APERTURA);
     }
 
     return {

@@ -236,11 +236,11 @@
         </div>
         <div class="status-text" id="status-text">Loading...</div>
         <div class="status-message" id="status-message"></div>
-        <p class="status-details" id="alert-info" style="margin-top: 1rem;"></p>
+        <p class="status-details" id="regular-hours" style="margin-top: 1rem;"></p>
         <div class="status-details" id="status-details"></div>
       </div>
 
-      <p class="status-details" id="regular-hours" style="margin-top: 1rem;"></p>
+      <p class="status-details" id="alert-info" style="margin-top: 1rem;"></p>
 
       <a href="https://www.madrid.es/portal/site/munimadrid/menuitem.0c57021e0d1f6162c345c34571f1a5a0/?vgnextfmt=default&vgnextoid=51c3fb4f3f2cc710VgnVCM1000001d4a900aRCRD&vgnextchannel=3edd31d3b28fe410VgnVCM1000000b205a0aRCRD&vgnextlocale=es"
          target="_blank"
@@ -311,7 +311,7 @@
         reopening: 'Previsión de reapertura',
         observations: 'Observaciones',
         alertInfo: 'Durante la <strong>alerta amarilla</strong>, en los Jardines del Buen Retiro, se restringirá el acceso a las zonas infantiles, zonas deportivas y de mayores, balizando las zonas afectadas. Durante la <strong>alerta naranja</strong>, se restringirá el acceso a algunas de las zonas infantiles, zonas deportivas y de mayores, balizando las zonas afectadas. Durante la <strong>alerta roja</strong> se cierran todos los accesos al parque.',
-        regularHours: 'Recuerda que el horario habitual es de 6:00 a 0:00 (medianoche) de abril a septiembre y de 6:00 a 22:00 de octubre a marzo, todos los días del año.',
+        regularHours: 'Recuerda que el horario habitual es de 6:00 a 0:00 (medianoche) de abril a septiembre y de 6:00 a 22:00 de octubre a marzo.',
         colorLabels: {
           green: 'ABIERTO',
           yellow: 'ALERTA AMARILLA',
@@ -365,6 +365,15 @@
       setLanguage(currentLang === 'es' ? 'en' : 'es');
     }
 
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
     function renderStatus(data) {
       const t = i18n[currentLang];
 
@@ -399,7 +408,7 @@
 
         if (rows.length) {
           details.innerHTML = '<table class="details-table">' +
-            rows.map(([label, val]) => `<tr><td>${label}</td><td>${val}</td></tr>`).join('') +
+            rows.map(([label, val]) => `<tr><td>${label}</td><td>${escapeHtml(val)}</td></tr>`).join('') +
             '</table>';
         } else {
           details.innerHTML = '';
